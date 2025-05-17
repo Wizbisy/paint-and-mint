@@ -1,13 +1,14 @@
 {
   "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
+    "header": "eyJmaWQiOjEwNDExMzIsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg5ODQyN2Q1M0MwYjA2MDk1OGQ0MWRhYTI1ZTI0MTcyOGE4ZTMwOWFkIn0",
+    "payload": "eyJkb21haW4iOiJwYWludC1hbmQtbWludC52ZXJjZWwuYXBwIn0",
+    "signature": "MHgwM2UxOWI4ZTY1YWI0MDA0OGU1YTBkMTY4YmFmMWJiZWVmM2RlOGQyNWQ4MWMwYjZhMDZhNzhjYWFjZGY0ZjE0MjQxMGFhNGZkMWY4YjY4ZDdhNGM1NmViM2ZhM2JmMGMxODFlNDgzY2RkOGFiYWY3NGE2Mzg2M2UxMDlmODg4MzFj"
   },
   "frame": {
     "version": "1",
     "name": "paint-and-mint",
     "iconUrl": "https://paint-and-mint.vercel.app/logo.png",
+    "buttonTitle": "paint! and mint!",
     "splashImageUrl": "https://paint-and-mint.vercel.app/splash.png",
     "splashBackgroundColor": "#FFFFFF",
     "homeUrl": "https://paint-and-mint.vercel.app",
