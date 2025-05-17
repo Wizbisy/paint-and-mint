@@ -18,7 +18,7 @@ export default function Home() {
   }, []);
 
   if (error) {
-    return <div style={{ color: "red" }}>Error: {error}</div>;
+    return <div style={{ color: "red", padding: "20px" }}>Error: {error}</div>;
   }
 
   return (
