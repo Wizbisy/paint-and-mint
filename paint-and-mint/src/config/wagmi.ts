@@ -1,14 +1,14 @@
-import { http, createConfig } from "wagmi";
-import { farcasterFrame as miniAppConnector } from "@farcaster/frame-wagmi-connector";
+import { createConfig, http } from "wagmi";
+import { Chain, defineChain } from "viem";
 
-const monadTestnet = {
+export const monadTestnet = defineChain({
   id: 10143,
   name: "Monad Testnet",
   network: "monad-testnet",
   nativeCurrency: {
-    name: "MONAD",
-    symbol: "MONAD",
     decimals: 18,
+    name: "Monad",
+    symbol: "MONAD",
   },
   rpcUrls: {
     default: { http: ["https://testnet-rpc.monad.xyz"] },
@@ -17,10 +17,11 @@ const monadTestnet = {
   blockExplorers: {
     default: { name: "Monad Explorer", url: "https://testnet.monvision.io" },
   },
-};
+});
 
 export const config = createConfig({
   chains: [monadTestnet],
-  transports: { [monadTestnet.id]: http() },
-  connectors: [miniAppConnector()],
+  transports: {
+    [monadTestnet.id]: http("https://testnet-rpc.monad.xyz"),
+  },
 });
