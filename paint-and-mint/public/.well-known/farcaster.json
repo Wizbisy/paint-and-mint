@@ -9,7 +9,7 @@
     "name": "paint-and-mint",
     "iconUrl": "https://paint-and-mint.vercel.app/logo.png",
     "splashImageUrl": "https://paint-and-mint.vercel.app/splash.png",
-    "splashBackgroundColor": "#51fd00",
+    "splashBackgroundColor": "#FFFFFF",
     "homeUrl": "https://paint-and-mint.vercel.app",
     "subtitle": "paint & mint",
     "description": "paint and mint on monad with farcaster",
@@ -17,8 +17,8 @@
     "primaryCategory": "art-creativity",
     "tags": ["paint", "monad", "nft", "mint"],
     "heroImageUrl": "https://paint-and-mint.vercel.app/og.png",
-    "tagline": "",
-    "ogTitle": "",
+    "tagline": "paint and mint on monad",
+    "ogTitle": "Paint and mint",
     "ogDescription": "Paint and mint",
     "ogImageUrl": "https://paint-and-mint.vercel.app/og.png"
   }
