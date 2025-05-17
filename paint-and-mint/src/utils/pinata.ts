@@ -1,15 +1,12 @@
-import PinataSDK from "@pinata/sdk";
+import { PinataSDK } from "pinata-web3";
 
 const pinata = new PinataSDK({
-  pinataApiKey: process.env.PINATA_API_KEY,
-  pinataSecretApiKey: process.env.PINATA_SECRET_API_KEY,
+  pinataJwt: process.env.PINATA_JWT,
 });
 
 export async function uploadToPinata(imageData: string, name: string) {
-  const buffer = Buffer.from(imageData.split(",")[1], "base64");
-  const result = await pinata.pinFileToIPFS(buffer, {
-    pinataMetadata: { name },
-    pinataOptions: { cidVersion: 0 },
-  });
-  return `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
+  const blob = await fetch(imageData).then((res) => res.blob());
+  const file = new File([blob], `${name}.png`, { type: "image/png" });
+  const upload = await pinata.upload.file(file);
+  return `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`;
 }
