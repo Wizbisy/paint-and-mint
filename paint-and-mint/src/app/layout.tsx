@@ -1,38 +1,58 @@
-'use client';
+"use client";
 import { useEffect } from "react";
+import "./globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   useEffect(() => {
-    import("@farcaster/frame-sdk")
-      .then(({ sdk }) => {
-        if (window.self !== window.top) {
-          sdk.actions.ready();
-          console.log("Farcaster SDK ready called");
-        }
-      })
-      .catch((err) => console.error("Failed to load Farcaster SDK:", err));
+    console.log("Layout mounted, checking Mini App context...");
+    const url = new URL(window.location.href);
+    const isMini =
+      window.self !== window.top ||
+      url.pathname.startsWith("/mini") ||
+      url.searchParams.get("miniApp") === "true" ||
+      url.searchParams.get("frame") === "miniapp";
+
+    if (isMini) {
+      console.log("Detected Mini App context, attempting to call SDK ready...");
+      import("@farcaster/frame-sdk")
+        .then(({ sdk }) => {
+          sdk.actions.ready({ disableNativeGestures: false });
+          console.log("Farcaster SDK ready called successfully");
+        })
+        .catch((err) => {
+          console.error("Failed to load or call Farcaster SDK:", err);
+        });
+    } else {
+      console.log("Not in Mini App context, skipping SDK ready");
+    }
   }, []);
 
   return (
     <html lang="en">
       <head>
-        <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:button:1" content="Draw Now" />
         <meta
-          property="fc:frame:button:1:url"
-          content="https://paint-and-mint.vercel.app"
-        />
-        <meta
-          property="fc:frame:button:1:splashImageUrl"
-          content="https://paint-and-mint.vercel.app/splash.png"
-        />
-        <meta
-          property="fc:frame:button:1:splashBackgroundColor"
-          content="#FFFFFF"
+          name="fc:frame"
+          content={JSON.stringify({
+            version: "next",
+            imageUrl: "https://paint-and-mint.vercel.app/og.png",
+            button: {
+              title: "Draw Now",
+              action: {
+                type: "launch_frame",
+                name: "Paint & Mint",
+                url: "https://paint-and-mint.vercel.app",
+                splashImageUrl: "https://paint-and-mint.vercel.app/splash.png",
+                splashBackgroundColor: "#FFFFFF",
+              },
+            },
+          })}
         />
       </head>
       <body>{children}</body>
     </html>
   );
 }
-
