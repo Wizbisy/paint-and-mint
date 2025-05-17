@@ -76,7 +76,7 @@ const Canvas = () => {
       const canvas = sketchRef.current?.querySelector("canvas");
       if (!canvas) throw new Error("Canvas element not found");
       const dataUrl = canvas.toDataURL("image/png");
-      console.log("Uploading to Pinata...");
+      console.log("Uploading to Pinata via API...");
       const ipfsUrl = await uploadToPinata(dataUrl, `Artwork-${Date.now()}`);
       console.log("Pinata upload successful, IPFS URL:", ipfsUrl);
       const contractAddress = process.env.NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS;
