@@ -8,7 +8,7 @@ import { ArtNFTABI } from "../types";
 
 const Canvas = () => {
   const sketchRef = useRef<HTMLDivElement>(null);
-  const { address, isConnected, error: accountError } = useAccount({ config });
+  const { address, isConnected } = useAccount({ config });
   const { writeContract, isPending, error: writeError } = useWriteContract();
   const [minting, setMinting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,15 +60,11 @@ const Canvas = () => {
   }, []);
 
   useEffect(() => {
-    if (accountError) {
-      console.error("Wagmi account error:", accountError);
-      setError(`Wallet connection error: ${accountError.message}`);
-    }
     if (writeError) {
       console.error("Wagmi write contract error:", writeError);
       setError(`Contract error: ${writeError.message}`);
     }
-  }, [accountError, writeError]);
+  }, [writeError]);
 
   const handleMint = async () => {
     if (!isConnected || !address) {
