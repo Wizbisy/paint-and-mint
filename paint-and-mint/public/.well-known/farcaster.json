@@ -1,0 +1,25 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "paint-and-mint",
+    "iconUrl": "https:///logo.png",
+    "splashImageUrl": "https:///splash.png",
+    "splashBackgroundColor": "#51fd00",
+    "homeUrl": "https://",
+    "subtitle": "",
+    "description": "",
+    "screenshotUrls": [],
+    "primaryCategory": "art-creativity",
+    "tags": ["momoney", "monad", "nft", "mint"],
+    "heroImageUrl": "https:///og.png",
+    "tagline": "",
+    "ogTitle": "",
+    "ogDescription": "Paint and mint",
+    "ogImageUrl": "https:///og.png"
+  }
+}
