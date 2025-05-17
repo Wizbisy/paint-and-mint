@@ -8,41 +8,71 @@ import { ArtNFTABI } from "../types";
 
 const Canvas = () => {
   const sketchRef = useRef<HTMLDivElement>(null);
-  const { address } = useAccount({ config });
-  const { writeContract, isPending } = useWriteContract();
+  const { address, isConnected, error: accountError } = useAccount({ config });
+  const { writeContract, isPending, error: writeError } = useWriteContract();
   const [minting, setMinting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Canvas component mounted, initializing p5...");
+    console.log("Canvas component mounted, checking environment...");
     try {
-      if (!sketchRef.current) throw new Error("Canvas container not found");
+      if (!process.env.NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS) {
+        throw new Error("Environment variable NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS is missing");
+      }
+      if (!sketchRef.current) {
+        throw new Error("Canvas container DOM element not found");
+      }
+      console.log("Initializing p5...");
       const sketch = (p: p5) => {
         p.setup = () => {
-          p.createCanvas(400, 400);
-          p.background(255);
+          try {
+            p.createCanvas(400, 400);
+            p.background(255);
+            console.log("p5 canvas created successfully");
+          } catch (err) {
+            throw new Error(`p5 setup failed: ${err}`);
+          }
         };
         p.mouseDragged = () => {
-          p.stroke(0);
-          p.strokeWeight(5);
-          p.line(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
+          try {
+            p.stroke(0);
+            p.strokeWeight(5);
+            p.line(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
+          } catch (err) {
+            console.error("p5 mouseDragged error:", err);
+          }
         };
       };
       const p5Instance = new p5(sketch, sketchRef.current);
       console.log("p5 initialized successfully");
       return () => {
         console.log("Cleaning up p5 instance");
-        p5Instance.remove();
+        try {
+          p5Instance.remove();
+        } catch (err) {
+          console.error("p5 cleanup error:", err);
+        }
       };
     } catch (err) {
-      console.error("p5 initialization failed:", err);
-      setError("Failed to initialize canvas. Check console.");
+      console.error("Canvas initialization failed:", err);
+      setError(`Failed to initialize canvas: ${err}`);
     }
   }, []);
 
+  useEffect(() => {
+    if (accountError) {
+      console.error("Wagmi account error:", accountError);
+      setError(`Wallet connection error: ${accountError.message}`);
+    }
+    if (writeError) {
+      console.error("Wagmi write contract error:", writeError);
+      setError(`Contract error: ${writeError.message}`);
+    }
+  }, [accountError, writeError]);
+
   const handleMint = async () => {
-    if (!address) {
-      alert("Connect your wallet via Farcaster!");
+    if (!isConnected || !address) {
+      setError("Please connect your wallet!");
       return;
     }
     setMinting(true);
@@ -50,33 +80,35 @@ const Canvas = () => {
       const canvas = sketchRef.current?.querySelector("canvas");
       if (!canvas) throw new Error("Canvas element not found");
       const dataUrl = canvas.toDataURL("image/png");
+      console.log("Uploading to Pinata...");
       const ipfsUrl = await uploadToPinata(dataUrl, `Artwork-${Date.now()}`);
+      console.log("Pinata upload successful, IPFS URL:", ipfsUrl);
       const contractAddress = process.env.NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS;
       if (!contractAddress) throw new Error("Contract address is missing");
+      console.log("Minting NFT to contract:", contractAddress);
       writeContract({
         address: contractAddress as `0x${string}`,
         abi: ArtNFTABI,
         functionName: "mintTo",
         args: [address, ipfsUrl],
       });
-      alert("NFT minted successfully!");
+      console.log("Mint transaction sent");
     } catch (error) {
       console.error("Minting failed:", error);
-      alert("Minting failed! Check console.");
-      setError("Minting failed. Check console.");
+      setError(`Minting failed: ${error}`);
     } finally {
       setMinting(false);
     }
   };
 
   if (error) {
-    return <div>{error}</div>;
+    return <div style={{ color: "red", padding: "20px" }}>Error: {error}</div>;
   }
 
   return (
     <div>
       <div ref={sketchRef}></div>
-      <button onClick={handleMint} disabled={minting || isPending}>
+      <button onClick={handleMint} disabled={minting || isPending || !isConnected}>
         {minting || isPending ? "Minting..." : "Mint Artwork"}
       </button>
     </div>
