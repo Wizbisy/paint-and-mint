@@ -242,7 +242,8 @@ export const ArtNFTABI = [
       {
         "indexed": true,
         "internalType": "address",
-        "name Search X for: @monad_xyz
+        "name": "to",
+        "type": "address"
       },
       {
         "indexed": true,
