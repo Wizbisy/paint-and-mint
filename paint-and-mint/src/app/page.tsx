@@ -1,19 +1,25 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Canvas = dynamic(() => import("../components/Canvas").catch((err) => {
   console.error("Failed to load Canvas component:", err);
-  return { default: () => <p>Error loading canvas. Check console.</p> };
+  return { default: () => <p>Error loading canvas: {err.message}</p> };
 }), {
   ssr: false,
   loading: () => <p>Loading canvas...</p>,
 });
 
 export default function Home() {
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     console.log("Home page rendered");
   }, []);
+
+  if (error) {
+    return <div style={{ color: "red" }}>Error: {error}</div>;
+  }
 
   return (
     <main>
