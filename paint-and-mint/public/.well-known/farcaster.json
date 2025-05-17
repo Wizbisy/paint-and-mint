@@ -7,19 +7,19 @@
   "frame": {
     "version": "1",
     "name": "paint-and-mint",
-    "iconUrl": "https:///logo.png",
-    "splashImageUrl": "https:///splash.png",
+    "iconUrl": "https://paint-and-mint.vercel.app/logo.png",
+    "splashImageUrl": "https://paint-and-mint.vercel.app/splash.png",
     "splashBackgroundColor": "#51fd00",
-    "homeUrl": "https://",
-    "subtitle": "",
-    "description": "",
+    "homeUrl": "https://paint-and-mint.vercel.app",
+    "subtitle": "paint & mint",
+    "description": "paint and mint on monad with farcaster",
     "screenshotUrls": [],
     "primaryCategory": "art-creativity",
-    "tags": ["momoney", "monad", "nft", "mint"],
-    "heroImageUrl": "https:///og.png",
+    "tags": ["paint", "monad", "nft", "mint"],
+    "heroImageUrl": "https://paint-and-mint.vercel.app/og.png",
     "tagline": "",
     "ogTitle": "",
     "ogDescription": "Paint and mint",
-    "ogImageUrl": "https:///og.png"
+    "ogImageUrl": "https://paint-and-mint.vercel.app/og.png"
   }
 }
