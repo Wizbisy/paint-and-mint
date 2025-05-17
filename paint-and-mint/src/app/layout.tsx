@@ -10,11 +10,19 @@ export default function RootLayout({
   useEffect(() => {
     const url = new URL(window.location.href);
     const isMini =
-      url.pathname.startsWith("/mini") || url.searchParams.get("miniApp") === "true";
+      url.pathname.startsWith("/mini") ||
+      url.searchParams.get("miniApp") === "true" ||
+      url.searchParams.get("frame") === "miniapp";
+
     if (isMini) {
-      import("@farcaster/frame-sdk").then(({ sdk }) => {
-        sdk.actions.ready();
-      });
+      import("@farcaster/frame-sdk")
+        .then(({ sdk }) => {
+          sdk.actions.ready({ disableNativeGestures: false });
+          console.log("Farcaster SDK ready called");
+        })
+        .catch((err) => {
+          console.error("Failed to load Farcaster SDK:", err);
+        });
     }
   }, []);
 
