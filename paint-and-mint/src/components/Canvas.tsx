@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
+import { sdk } from '@farcaster/frame-sdk';
 import { useAccount, useWriteContract } from "wagmi";
 import { uploadToPinata } from "../utils/pinata";
 import { config } from "../config/wagmi";
@@ -13,6 +14,7 @@ const Canvas = () => {
   const [minting, setMinting] = useState(false);
 
   useEffect(() => {
+    sdk.actions.ready();
     const sketch = (p: p5) => {
       p.setup = () => {
         p.createCanvas(400, 400);
