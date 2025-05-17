@@ -1,24 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    };
-    return config;
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: process.env.NEXT_PUBLIC_CSP_HEADER || "script-src 'self'; object-src 'self';",
+          },
+        ],
+      },
+    ];
   },
-  headers: async () => [
-    {
-      source: "/.well-known/farcaster.json",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=0, must-revalidate",
-        },
-      ],
-    },
-  ],
 };
 
 module.exports = nextConfig;
