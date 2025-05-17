@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { ErrorBoundary } from "../components/ErrorBoundary";
+import { WagmiProvider } from "wagmi";
+import { config } from "../config/wagmi";
 import "./globals.css";
 
 export default function RootLayout({
@@ -54,9 +55,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ErrorBoundary>
+        <WagmiProvider config={config}>
           {children}
-        </ErrorBoundary>
+        </WagmiProvider>
       </body>
     </html>
   );
