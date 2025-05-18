@@ -8,6 +8,7 @@ const pinata = new PinataSDK({
 
 export async function POST(request: Request) {
   try {
+    console.log("Received upload request...");
     if (!process.env.PINATA_API_KEY || !process.env.PINATA_SECRET_API_KEY) {
       throw new Error("Pinata API keys are missing");
     }
@@ -17,6 +18,7 @@ export async function POST(request: Request) {
       throw new Error("dataUrl and name are required");
     }
 
+    console.log("Processing upload with name:", name);
     const buffer = Buffer.from(dataUrl.split(",")[1], "base64");
     const response = await pinata.pinFileToIPFS({
       name,
@@ -32,8 +34,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ipfsUrl: `https://ipfs.io/ipfs/${response.IpfsHash}` });
   } catch (error) {
     console.error("Pinata upload error:", error);
-    return NextResponse.json({ error: `Failed to upload to Pinata: ${error}` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to upload to Pinata: ${error.message}` }, { status: 500 });
   }
 }
 
-export const runtime = "nodejs"; // Ensures server-side execution
+export const runtime = "nodejs";
