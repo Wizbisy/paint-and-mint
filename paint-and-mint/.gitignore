@@ -28,4 +28,5 @@ node_modules
 .env.local
 .vercel
 dist
-build
+build 
+next 
