@@ -14,92 +14,66 @@ const Canvas = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Canvas component mounted, checking environment...");
-    try {
-      if (!process.env.NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS) {
-        throw new Error("Environment variable NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS is missing");
-      }
-      if (!sketchRef.current) {
-        throw new Error("Canvas container DOM element not found");
-      }
-      console.log("Initializing p5...");
-      const sketch = (p: p5) => {
-        p.setup = () => {
-          try {
-            p.createCanvas(400, 400);
-            p.background(255);
-            console.log("p5 canvas created successfully");
-          } catch (err) {
-            throw new Error(`p5 setup failed: ${err}`);
-          }
-        };
-        p.mouseDragged = () => {
-          try {
-            p.stroke(0);
-            p.strokeWeight(5);
-            p.line(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
-          } catch (err) {
-            console.error("p5 mouseDragged error:", err);
-          }
-        };
-      };
-      const p5Instance = new p5(sketch, sketchRef.current);
-      console.log("p5 initialized successfully");
-      return () => {
-        console.log("Cleaning up p5 instance");
-        try {
-          p5Instance.remove();
-        } catch (err) {
-          console.error("p5 cleanup error:", err);
-        }
-      };
-    } catch (err) {
-      console.error("Canvas initialization failed:", err);
-      setError(`Failed to initialize canvas: ${err}`);
+    if (typeof window === "undefined" || !sketchRef.current) return;
+
+    const contractAddress = process.env.NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS || "";
+    if (!contractAddress) {
+      setError("Missing contract address.");
+      return;
     }
+
+    const sketch = (p: p5) => {
+      p.setup = () => {
+        p.createCanvas(400, 400);
+        p.background(255);
+      };
+      p.mouseDragged = () => {
+        p.stroke(0);
+        p.strokeWeight(5);
+        p.line(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
+      };
+    };
+
+    const p5Instance = new p5(sketch, sketchRef.current);
+    return () => {
+      p5Instance.remove();
+    };
   }, []);
 
   useEffect(() => {
-    if (writeError) {
-      console.error("Wagmi write contract error:", writeError);
-      setError(`Contract error: ${writeError.message}`);
-    }
+    if (writeError) setError(`Contract error: ${writeError.message}`);
   }, [writeError]);
 
   const handleMint = async () => {
     if (!isConnected || !address) {
-      setError("Please connect your wallet!");
+      setError("Please connect your wallet.");
       return;
     }
+
     setMinting(true);
     try {
       const canvas = sketchRef.current?.querySelector("canvas");
-      if (!canvas) throw new Error("Canvas element not found");
+      if (!canvas) throw new Error("Canvas not found");
       const dataUrl = canvas.toDataURL("image/png");
-      console.log("Uploading to Pinata via API...");
       const ipfsUrl = await uploadToPinata(dataUrl, `Artwork-${Date.now()}`);
-      console.log("Pinata upload successful, IPFS URL:", ipfsUrl);
+
       const contractAddress = process.env.NEXT_PUBLIC_ART_NFT_CONTRACT_ADDRESS;
-      if (!contractAddress) throw new Error("Contract address is missing");
-      console.log("Minting NFT to contract:", contractAddress);
-      writeContract({
+      if (!contractAddress) throw new Error("Contract address missing");
+
+      await writeContract({
         address: contractAddress as `0x${string}`,
         abi: ArtNFTABI,
         functionName: "mintTo",
         args: [address, ipfsUrl],
       });
-      console.log("Mint transaction sent");
-    } catch (error) {
-      console.error("Minting failed:", error);
-      setError(`Minting failed: ${error}`);
+    } catch (err: any) {
+      setError(`Minting failed: ${err.message || err}`);
     } finally {
       setMinting(false);
     }
   };
 
-  if (error) {
-    return <div style={{ color: "red", padding: "20px" }}>Error: {error}</div>;
-  }
+  if (error) return <div style={{ color: "red", padding: "20px" }}>Error: {error}</div>;
 
   return (
     <div>
