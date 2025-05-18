@@ -34,7 +34,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ipfsUrl: `https://ipfs.io/ipfs/${response.IpfsHash}` });
   } catch (error) {
     console.error("Pinata upload error:", error);
-    return NextResponse.json({ error: `Failed to upload to Pinata: ${error.message}` }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: `Failed to upload to Pinata: ${errorMessage}` }, { status: 500 });
   }
 }
 
