@@ -1,8 +1,9 @@
 "use client";
+
 import { useEffect } from "react";
 import { WagmiProvider } from "wagmi";
 import { config } from "../config/wagmi";
-import "./globals.css";
+import "../styles/globals.css"; 
 
 export default function RootLayout({
   children,
@@ -10,6 +11,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     console.log("Layout mounted, checking Mini App context...");
     const url = new URL(window.location.href);
     const isMini =
@@ -19,7 +22,7 @@ export default function RootLayout({
       url.searchParams.get("frame") === "miniapp";
 
     if (isMini) {
-      console.log("Detected Mini App context, attempting to call SDK ready...");
+      console.log("Detected Mini App context, loading SDK...");
       import("@farcaster/frame-sdk")
         .then(({ sdk }) => {
           sdk.actions.ready({ disableNativeGestures: false });
@@ -28,37 +31,12 @@ export default function RootLayout({
         .catch((err) => {
           console.error("Failed to load or call Farcaster SDK:", err);
         });
-    } else {
-      console.log("Not in Mini App context, skipping SDK ready");
     }
   }, []);
 
   return (
-    <html lang="en">
-      <head>
-        <meta
-          name="fc:frame"
-          content={JSON.stringify({
-            version: "next",
-            imageUrl: "https://paint-and-mint.vercel.app/og.png",
-            button: {
-              title: "Draw Now",
-              action: {
-                type: "launch_frame",
-                name: "Paint & Mint",
-                url: "https://paint-and-mint.vercel.app",
-                splashImageUrl: "https://paint-and-mint.vercel.app/splash.png",
-                splashBackgroundColor: "#FFFFFF",
-              },
-            },
-          })}
-        />
-      </head>
-      <body>
-        <WagmiProvider config={config}>
-          {children}
-        </WagmiProvider>
-      </body>
-    </html>
+    <WagmiProvider config={config}>
+      {children}
+    </WagmiProvider>
   );
 }
